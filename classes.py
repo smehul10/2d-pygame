@@ -1,8 +1,23 @@
 import pygame
+from abc import ABC, abstractmethod
 
-class Sprite:
-    def __init__(self, position, image_path, scale=1, frames_max=1, offset=(0, 0)):
+# Abstract base class
+class AbstractSprite(ABC):
+    def __init__(self, position):
         self.position = pygame.Vector2(position)
+
+    @abstractmethod
+    def draw(self, surface):
+        pass
+
+    @abstractmethod
+    def update(self, surface):
+        pass
+
+
+class Sprite(AbstractSprite):
+    def __init__(self, position, image_path, scale=1, frames_max=1, offset=(0, 0)):
+        super().__init__(position)
         self.scale = scale
         self.frames_max = frames_max
         self.frames_current = 0
@@ -33,6 +48,7 @@ class Sprite:
     def update(self, surface):
         self.draw(surface)
         self.animate_frames()
+
 
 class Fighter(Sprite):
     def __init__(self, position, velocity, color='red', image_path=None, scale=1, frames_max=1, offset=(0, 0),
@@ -80,30 +96,6 @@ class Fighter(Sprite):
         else:
             self.switch_sprite('takeHit')
 
-    # def switch_sprite(self, sprite_name):
-    #     if self.dead:
-    #         return
-    #     sprite = self.sprites.get(sprite_name)
-    #     if not sprite or self.image == sprite['image']:
-    #         return
-
-    #     if self.image == self.sprites.get('death', {}).get('image') and self.frames_current == self.frames_max - 1:
-    #         self.dead = True
-    #         return
-
-    #     if (self.image == self.sprites.get('attack1', {}).get('image') and
-    #         self.frames_current < self.sprites['attack1']['framesMax'] - 1):
-    #         return
-
-    #     if (self.image == self.sprites.get('takeHit', {}).get('image') and
-    #         self.frames_current < self.sprites['takeHit']['framesMax'] - 1):
-    #         return
-
-    #     self.image = sprite['image']
-    #     self.frames_max = sprite['framesMax']
-    #     self.frames_current = 0
-    
-    
     def switch_sprite(self, sprite_name):
         # If already playing death animation and it’s not finished, do nothing
         if self.image == self.sprites.get('death', {}).get('image'):
